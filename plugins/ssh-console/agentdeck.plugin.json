@@ -1,0 +1,20 @@
+{
+  "id": "ssh-console",
+  "name": "SSH Console",
+  "version": "1.0.0",
+  "apiVersion": 2,
+  "entry": "index.html",
+  "backend": "backend.cjs",
+  "description": "SSH 服务器连接、资源与进程监控、文件浏览和多终端。",
+  "permissions": [
+    "backend",
+    "clipboard"
+  ],
+  "commands": [
+    {
+      "id": "open",
+      "title": "打开 SSH Console"
+    }
+  ],
+  "icon": "terminal"
+}

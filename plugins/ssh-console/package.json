@@ -1,0 +1,26 @@
+{
+  "name": "@agentdeck-plugins/ssh-console",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "可选安装的 AgentDeck SSH 服务器控制台",
+  "scripts": {
+    "build": "node scripts/build.mjs"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "5.104.0",
+    "@xterm/addon-fit": "0.11.0",
+    "@xterm/addon-search": "0.16.0",
+    "@xterm/xterm": "6.0.0",
+    "fastify": "5.12.8",
+    "lucide-react": "1.49.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "ssh-config": "5.3.0",
+    "ssh2": "1.17.0",
+    "zod": "4.6.7",
+    "zustand": "5.0.15",
+    "@ariakit/react": "0.4.40",
+    "csv-parse": "7.0.3"
+  }
+}
