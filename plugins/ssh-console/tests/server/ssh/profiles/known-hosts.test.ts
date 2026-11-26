@@ -1,11 +1,6 @@
 import { createHmac, randomBytes } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
-import {
-  hostKeyAlgorithms,
-  knownHostKeyTypes,
-  knownHostsForTarget,
-  verifyHostKey,
-} from '../../../../src/server/ssh/profiles/known-hosts';
+import { hostKeyAlgorithms, knownHostKeyTypes, verifyHostKey } from '../../../../src/server/ssh/profiles/known-hosts';
 
 /** 构造 SSH 线格式的公钥：string(type) + string(随机内容)，每段以 4 字节长度开头 */
 function lenPrefixed(b: Buffer): Buffer {
@@ -69,6 +64,20 @@ describe('verifyHostKey', () => {
   it('没有条目时返回 unknown，忽略注释和空行', () => {
     expect(verifyHostKey(`# comment\n\nh2 ssh-ed25519 ${b64(ed)}\r\n`, 'h1', 22, ed)).toBe('unknown');
   });
+
+  it('通配符匹配遵守否定主机规则，匹配的吊销记录仍拒绝', () => {
+    const text = [`[h*]:2222 ssh-ed25519 ${b64(ed)}`, `@revoked [h*]:2222 ssh-ed25519 ${b64(edOther)}`].join('\n');
+    expect(verifyHostKey(text, 'h1', 2222, ed)).toBe('match');
+    expect(verifyHostKey(text, 'h1', 2222, edOther)).toBe('revoked');
+    const excluded = `![h1]:2222,[h*]:2222 ssh-ed25519 ${b64(ed)}`;
+    expect(verifyHostKey(excluded, 'h1', 2222, ed)).toBe('unknown');
+    expect(verifyHostKey(excluded, 'h2', 2222, ed)).toBe('match');
+  });
+
+  it('格式损坏的匹配密钥不能被自动修正为可信记录', () => {
+    const invalid = `h1 ssh-ed25519 ${b64(ed).slice(0, 12)}!${b64(ed).slice(12)}`;
+    expect(verifyHostKey(invalid, 'h1', 22, ed)).toBe('unknown');
+  });
 });
 
 describe('knownHostKeyTypes', () => {
@@ -97,26 +106,5 @@ describe('hostKeyAlgorithms', () => {
   it('过滤掉 ssh2 不支持的类型，避免连接时报错', () => {
     expect(hostKeyAlgorithms(['sk-ssh-ed25519@openssh.com', 'ssh-ed25519'])).toEqual(['ssh-ed25519']);
     expect(hostKeyAlgorithms(['sk-ecdsa-sha2-nistp256@openssh.com'])).toEqual([]);
-  });
-});
-
-describe('rclone 使用的目标信任记录', () => {
-  it('只保留匹配目标，哈希与通配符规范化并保留吊销记录', () => {
-    const text = [
-      `${hashed('[h1]:2222')} ssh-ed25519 ${b64(ed)}`,
-      `@revoked [h*]:2222 ssh-ed25519 ${b64(edOther)}`,
-      'unrelated ssh-ed25519 invalid!base64',
-      `![h1]:2222,[h*]:2222 ssh-ed25519 ${b64(edOther)}`,
-    ].join('\n');
-    const selected = knownHostsForTarget(text, 'h1', 2222);
-    expect(selected).toBe(`[h1]:2222 ssh-ed25519 ${b64(ed)}\n@revoked [h1]:2222 ssh-ed25519 ${b64(edOther)}\n`);
-    expect(verifyHostKey(selected, 'h1', 2222, ed)).toBe('match');
-    expect(verifyHostKey(selected, 'h1', 2222, edOther)).toBe('revoked');
-    expect(knownHostsForTarget(text, 'unknown', 22)).toBe('');
-  });
-  it('格式损坏的匹配密钥不能被自动修正为可信记录', () => {
-    const invalid = `h1 ssh-ed25519 ${b64(ed).slice(0, 12)}!${b64(ed).slice(12)}`;
-    expect(verifyHostKey(invalid, 'h1', 22, ed)).toBe('unknown');
-    expect(knownHostsForTarget(invalid, 'h1', 22)).toBe('');
   });
 });

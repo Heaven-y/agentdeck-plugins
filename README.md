@@ -2,10 +2,10 @@
 
 AgentDeck 的可选工作台扩展。每个扩展放在 `plugins/<name>`，维护自己的插件清单、依赖、测试和构建产物，可独立安装和更新。
 
-| 扩展                                         | 用途                         | 接口版本 |
-| -------------------------------------------- | ---------------------------- | -------- |
-| [SSH Console](plugins/ssh-console/README.md) | SSH 服务器、资源、文件和终端 | v2       |
-| [Codex 委派](plugins/agy-codex-delegate/README.md) | AGY 分派、问答、返修和验收 Codex 任务 | v2 |
+| 扩展                                               | 用途                                  | 接口版本 |
+| -------------------------------------------------- | ------------------------------------- | -------- |
+| [SSH 控制台](plugins/ssh-console/README.md)        | SSH 服务器、资源、文件和终端          | v2       |
+| [Codex 委派](plugins/agy-codex-delegate/README.md) | AGY 分派、问答、返修和验收 Codex 任务 | v2       |
 
 ## 开发
 

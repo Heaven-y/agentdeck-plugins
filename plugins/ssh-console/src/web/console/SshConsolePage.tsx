@@ -43,7 +43,7 @@ export default function SshConsolePage({ visible, onManageServers }: SshConsoleP
     retry: false,
   });
   return (
-    <section aria-label="SSH Console" hidden={!visible} className="flex h-full min-h-0 min-w-0 flex-col bg-background">
+    <section aria-label="SSH 控制台" hidden={!visible} className="flex h-full min-h-0 min-w-0 flex-col bg-background">
       <div className="flex shrink-0 items-center gap-3 border-b border-border px-4 py-2.5">
         <ConsoleServerTabs
           tabs={navigation.tabs}

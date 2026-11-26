@@ -163,7 +163,7 @@ it('控制台不用项目身份，只对当前可见概览或进程采样，隐�
   const view = render(page());
   await tick();
   await open();
-  expect(screen.getByRole('region', { name: 'SSH Console' })).toBeTruthy();
+  expect(screen.getByRole('region', { name: 'SSH 控制台' })).toBeTruthy();
   expect(calls.some(({ url }) => url.startsWith('/api/ssh-console/my-server/overview'))).toBe(true);
   expect(calls.some(({ url }) => url.includes('/workspaces/'))).toBe(false);
   fireEvent.click(screen.getByRole('tab', { name: '进程' }));

@@ -1,6 +1,6 @@
 {
   "id": "ssh-console",
-  "name": "SSH Console",
+  "name": "SSH 控制台",
   "version": "1.0.0",
   "apiVersion": 2,
   "entry": "index.html",
@@ -10,12 +10,12 @@
   "commands": [
     {
       "id": "open",
-      "title": "打开 SSH Console"
+      "title": "打开 SSH 控制台"
     }
   ],
   "icon": "terminal",
   "contributes": {
-    "pages": [{ "id": "main", "title": "SSH Console", "location": "sidebar" }],
+    "pages": [{ "id": "main", "title": "SSH 控制台", "location": "sidebar" }],
     "actions": []
   }
 }
