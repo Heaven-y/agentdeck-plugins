@@ -1,0 +1,22 @@
+{
+  "name": "@agentdeck/plugin-sdk",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "AgentDeck 扩展的浏览器类型与本机后端运行接口",
+  "license": "MIT",
+  "exports": {
+    "./browser": {
+      "types": "./browser.d.ts"
+    },
+    "./backend": {
+      "types": "./backend.d.mts",
+      "default": "./backend.mjs"
+    }
+  },
+  "files": [
+    "browser.d.ts",
+    "backend.d.mts",
+    "backend.mjs",
+    "README.md"
+  ]
+}
