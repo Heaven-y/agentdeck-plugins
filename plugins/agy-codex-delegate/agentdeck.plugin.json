@@ -1,0 +1,24 @@
+{
+  "id": "agy-codex-delegate",
+  "name": "Codex 委派",
+  "version": "0.1.0",
+  "apiVersion": 2,
+  "entry": "index.html",
+  "backend": "backend.cjs",
+  "sessionLifecycle": true,
+  "description": "在 AGY 中明确委派 Codex，统一设置执行参数，接收问题并验收结果。",
+  "permissions": ["backend", "project-context", "session-context", "session-control", "composer"],
+  "events": ["context.changed", "turn.completed"],
+  "commands": [
+    { "id": "open", "title": "查看 Codex 委派", "page": "settings" },
+    { "id": "with-codex", "title": "本次允许 Codex", "execution": "background" }
+  ],
+  "contributes": {
+    "nativeCommands": [{ "agent": "antigravity", "name": "with-codex" }],
+    "pages": [{ "id": "settings", "title": "Codex 委派", "location": "settings" }],
+    "actions": [
+      { "command": "with-codex", "location": "composer" },
+      { "command": "open", "location": "composer" }
+    ]
+  }
+}

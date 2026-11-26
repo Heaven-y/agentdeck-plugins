@@ -1,6 +1,8 @@
 export type Agent = 'claude' | 'codex' | 'antigravity';
 export type SessionContext = {
   conversationId: string;
+  /** session.list 返回的本次打开标识；关闭重开会变化。 */
+  openId?: string;
   workspaceId?: string;
   agent: Agent;
   sessionId?: string;
@@ -56,7 +58,11 @@ export type PluginApi = {
   };
   storage: { get(): Promise<PluginStorage>; set(input: PluginStorage): Promise<PluginStorage> };
   project: { get(): Promise<Project | null> };
-  session: { get(): Promise<SessionContext | null> };
+  session: {
+    get(): Promise<SessionContext | null>;
+    list(): Promise<SessionContext[]>;
+    resume(input: { conversationId: string; requestId: string; text: string }): Promise<{ accepted: boolean }>;
+  };
   composer: { get(): Promise<Draft>; set(input: Pick<Draft, 'text' | 'revision'>): Promise<null> };
   clipboard: { readText(): Promise<string>; writeText(value: string): Promise<void> };
   onContext(listener: (context: PluginContext) => void): () => void;

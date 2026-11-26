@@ -31,3 +31,7 @@ definePlugin({
 清单分别声明所需权限。例如上述后台读取项目需要 `projects`，输入框操作需要 `composer`。完整清单、贡献位置、事件、分页及生命周期见[宿主契约](https://github.com/Heaven-y/agentdeck/blob/main/docs/engineering/workbench-plugins.md)。
 
 命令按顺序执行。后台命令不会打开页面；命令触发后切换会话，或读取草稿后用户继续输入，旧命令的草稿修改会被拒绝。事件只携带会话身份和运行状态；订阅函数返回取消订阅方法。UI 事件来源是当前工作台已连接的会话，不会重放应用关闭期间的事件。
+
+`session.list()` 返回已打开标签的身份，openId 在关闭重开时更新。声明 `session-control` 后，可用 `session.resume({conversationId, requestId, text})` 续接其中的空闲会话；requestId 使用稳定 UUID，服务端受理后 accepted 才为 true，待确认时重复同一 ID 不重发，草稿和当前页面保持原状。需要删除联动的后端声明 `sessionLifecycle: true`，处理 `/_agentdeck/lifecycle` 的通知；具体事件和失败行为以宿主契约为准。
+
+原生 CLI 插件的短命令通过 `contributes.nativeCommands` 声明所需 agent 和 name，仍需 session-control 权限；宿主核对唯一已启用声明后原样转交，不展开或解释业务正文。

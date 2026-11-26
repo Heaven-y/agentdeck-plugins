@@ -2,6 +2,7 @@ import type { BackendRequest, HostServices } from './browser.js';
 export type PluginBackendContext = {
   dataDir: string;
   hostDataDir: string;
+  enabled?: boolean;
   host: HostServices;
 };
 export function definePlugin<T>(definition: {
