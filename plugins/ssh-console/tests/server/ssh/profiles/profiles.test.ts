@@ -76,14 +76,6 @@ describe('服务器档案事务及HTTP保护', () => {
     expect(await f.targets.list()).toEqual([]);
     expect(f.pool.forgetServerCredentials).toHaveBeenCalledExactlyOnceWith(f.server);
   });
-  it('服务器不再被项目引用，只要有完整确认就能删除', async () => {
-    // 项目与服务器解耦：删除服务器只受凭据状态约束，不再看有没有项目引用它。
-    const f = await fixture();
-    const url = '/api/ssh-targets/' + f.server.alias;
-    const removed = await f.app.inject({ method: 'DELETE', url, payload: { expected: f.server, confirmed: true } });
-    expect(removed.statusCode).toBe(204);
-    expect(await f.targets.list()).toEqual([]);
-  });
   it('项目存在与否不影响改连接目标', async () => {
     // 旧版本会因"服务器被项目引用"拒绝改 hostname；现在项目里根本没有这个字段。
     const f = await fixture();

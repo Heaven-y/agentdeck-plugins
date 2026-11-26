@@ -1,20 +1,21 @@
 {
   "id": "ssh-console",
-  "name": "SSH Console",
+  "name": "SSH 控制台",
   "version": "1.0.0",
   "apiVersion": 2,
   "entry": "index.html",
   "backend": "backend.cjs",
   "description": "SSH 服务器连接、资源与进程监控、文件浏览和多终端。",
-  "permissions": [
-    "backend",
-    "clipboard"
-  ],
+  "permissions": ["backend", "clipboard"],
   "commands": [
     {
       "id": "open",
-      "title": "打开 SSH Console"
+      "title": "打开 SSH 控制台"
     }
   ],
-  "icon": "terminal"
+  "icon": "terminal",
+  "contributes": {
+    "pages": [{ "id": "main", "title": "SSH 控制台", "location": "sidebar" }],
+    "actions": []
+  }
 }

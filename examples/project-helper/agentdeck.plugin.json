@@ -1,0 +1,25 @@
+{
+  "id": "project-helper",
+  "name": "项目助手",
+  "version": "1.0.0",
+  "apiVersion": 2,
+  "entry": "index.html",
+  "description": "在输入框插入项目说明，查看当前项目的原生会话。",
+  "permissions": ["storage", "project-context", "projects", "session-context", "session-history", "composer"],
+  "commands": [
+    { "id": "open", "title": "打开项目助手", "page": "main" },
+    { "id": "insert-project", "title": "插入项目说明", "execution": "background" },
+    { "id": "session-info", "title": "查看当前会话", "page": "main" }
+  ],
+  "contributes": {
+    "pages": [
+      { "id": "main", "title": "项目助手", "location": "sidebar" },
+      { "id": "settings", "title": "项目助手设置", "location": "settings" }
+    ],
+    "actions": [
+      { "command": "insert-project", "location": "composer" },
+      { "command": "session-info", "location": "session" }
+    ]
+  },
+  "events": ["context.changed", "turn.started", "turn.completed"]
+}

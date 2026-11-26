@@ -11,8 +11,11 @@ export class ApiError extends Error {
 }
 export async function request<T>(url: string, init?: RequestInit): Promise<T> {
   init?.signal?.throwIfAborted();
+  const method = init?.method ?? 'GET';
+  if (method !== 'GET' && method !== 'POST' && method !== 'PUT' && method !== 'PATCH' && method !== 'DELETE')
+    throw new Error('不支持此请求方式');
   const response = await window.agentdeck.backend.request(
-    { method: init?.method ?? 'GET', url, ...(typeof init?.body === 'string' ? { body: JSON.parse(init.body) } : {}) },
+    { method, url, ...(typeof init?.body === 'string' ? { body: JSON.parse(init.body) } : {}) },
     { signal: init?.signal },
   );
   init?.signal?.throwIfAborted();

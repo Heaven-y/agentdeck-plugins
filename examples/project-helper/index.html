@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{margin:0;padding:28px;color:var(--color-foreground,#222);background:var(--color-background,#fff);font:14px/1.6 system-ui,sans-serif}main{max-width:680px;margin:auto}h2{font-size:20px;margin:0 0 6px}p{color:var(--color-muted-foreground,#666)}button,input{font:inherit;border:1px solid var(--color-border,#ddd);border-radius:8px;padding:8px 12px;background:transparent;color:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:2px solid var(--color-interactive,#456ee5);outline-offset:2px}form{display:grid;gap:12px}label{display:grid;gap:6px}ul{list-style:none;padding:0}li{padding:12px 0;border-bottom:1px solid var(--color-border,#ddd)}[hidden]{display:none!important}#error{color:var(--color-destructive-foreground,#b22)}
+</style></head><body><main>
+<section id="main"><h2>项目助手</h2><p id="project">选择一个项目开始。</p><p id="activity" aria-live="polite"></p><button id="load" type="button">查看最近会话</button><ul id="sessions"></ul></section>
+<section id="settings" hidden><h2>项目助手设置</h2><form id="preferences"><label>插入说明的开头<input id="prefix" maxlength="200" value="请在此项目中继续："></label><button type="submit">保存</button></form><p id="saved" role="status"></p></section>
+<p id="error" role="alert"></p>
+</main><script type="module">
+const api = window.agentdeck;
+const element = id => document.getElementById(id);
+const showError = error => { element('error').textContent = error.message || '操作失败'; };
+let context;
+api.onContext(value => {
+  context = value;
+  for(const [key,color] of Object.entries(value.colors)) document.documentElement.style.setProperty(key,color);
+  element('main').hidden = value.page?.id === 'settings';
+  element('settings').hidden = value.page?.id !== 'settings';
+  element('project').textContent = value.project?.name || '选择一个项目开始。';
+});
+async function preferences() { return api.storage.get(); }
+preferences().then(saved => { if(typeof saved.value.prefix === 'string') element('prefix').value = saved.value.prefix; }).catch(showError);
+element('preferences').addEventListener('submit', async event => {
+  event.preventDefault();
+  try { const saved = await preferences(); await api.storage.set({value:{prefix:element('prefix').value},revision:saved.revision}); element('saved').textContent = '已保存'; } catch(error) { showError(error); }
+});
+async function loadSessions() {
+  const session = await api.session.get();
+  if(!session?.workspaceId) throw new Error('请先选择项目。');
+  const page = await api.host.request({method:'sessions.list',params:{projectId:session.workspaceId,agent:session.agent}});
+  element('sessions').replaceChildren(...page.items.map(item => {const row=document.createElement('li');row.textContent=item.title || '未命名会话';return row;}));
+}
+element('load').addEventListener('click', () => { loadSessions().catch(showError); });
+api.onCommand(async id => {
+  if(id === 'insert-project') {
+    const draft = await api.composer.get();
+    const [project,saved] = await Promise.all([api.project.get(), preferences()]);
+    if(!project) throw new Error('请先选择项目。');
+    const prefix = typeof saved.value.prefix === 'string' ? saved.value.prefix : '请在此项目中继续：';
+    await api.composer.set({text:[draft.text, `${prefix}${project.name}`].filter(Boolean).join('\n'),revision:draft.revision});
+  } else if(id === 'session-info') await loadSessions();
+});
+for(const name of ['context.changed','turn.started','turn.completed']) api.onEvent(name,event => {
+  if(context?.session?.conversationId === event.session.conversationId) element('activity').textContent = event.session.running ? '正在运行' : '会话空闲';
+});
+</script></body></html>

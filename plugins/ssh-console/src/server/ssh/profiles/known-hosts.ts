@@ -76,16 +76,6 @@ export function knownHostRecordsForTarget(text: string, host: string, port: numb
   );
 }
 
-/** 从已有信任记录筛出该目标；不读取或信任远端新密钥，也不修改用户 known_hosts。 */
-export function knownHostsForTarget(text: string, host: string, port: number): string {
-  const name = hostName(host, port);
-  return entriesFor(text, host, port)
-    .filter((entry) => entry.marker === undefined || entry.marker === '@revoked')
-    .filter((entry) => keyType(entry.key) === entry.type)
-    .map((entry) => `${entry.marker ? `${entry.marker} ` : ''}${name} ${entry.type} ${entry.key.toString('base64')}\n`)
-    .join('');
-}
-
 const sameKey = (a: Buffer, b: Buffer) => a.length === b.length && timingSafeEqual(a, b);
 
 /**

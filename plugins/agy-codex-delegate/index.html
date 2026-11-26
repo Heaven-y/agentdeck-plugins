@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Codex 委派</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--color-background, #fff);
+        color: var(--color-foreground, #202025);
+        font:
+          14px/1.6 system-ui,
+          sans-serif;
+      }
+      main {
+        max-width: 860px;
+        margin: auto;
+        padding: 28px 30px 48px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      h1 {
+        font-size: 22px;
+        letter-spacing: -0.03em;
+        margin: 0;
+      }
+      h2 {
+        font-size: 16px;
+        margin: 26px 0 12px;
+      }
+      p {
+        margin: 6px 0 16px;
+      }
+      .muted,
+      small {
+        color: var(--color-muted-foreground, #666);
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+        color: inherit;
+        background: var(--color-background, #fff);
+        border: 1px solid var(--color-border, #ddd);
+        border-radius: 8px;
+        min-height: 40px;
+        padding: 8px 12px;
+        max-width: 100%;
+      }
+      button {
+        cursor: pointer;
+      }
+      button:disabled {
+        opacity: 0.55;
+        cursor: default;
+      }
+      button:hover:enabled {
+        background: var(--color-muted, #f2f3f5);
+      }
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      button:focus-visible {
+        outline: 2px solid var(--color-ring, #4979c9);
+        outline-offset: 3px;
+      }
+      .primary {
+        background: var(--color-primary, #25272b);
+        color: var(--color-primary-foreground, #fff);
+        border-color: transparent;
+      }
+      .primary:hover:enabled {
+        filter: brightness(1.1);
+        background: var(--color-primary, #25272b);
+      }
+      .setup {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 16px 18px;
+        border: 1px solid var(--color-border, #ddd);
+        border-radius: 12px;
+        margin-bottom: 24px;
+      }
+      .setup p {
+        margin: 0;
+      }
+      .setup button {
+        flex-shrink: 0;
+      }
+      .setup code {
+        font-size: 13px;
+      }
+      form {
+        max-width: 760px;
+      }
+      .fields {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+      label {
+        display: grid;
+        grid-template-columns: minmax(100px, 1fr) minmax(220px, 320px);
+        align-items: center;
+        column-gap: 24px;
+        padding: 17px 0;
+        border-bottom: 1px solid var(--color-border, #ddd);
+      }
+      label small {
+        font-size: 12px;
+        grid-column: 2;
+        margin-top: 5px;
+      }
+      footer {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 24px;
+      }
+      #error {
+        color: var(--color-destructive, #bd3434);
+        overflow-wrap: anywhere;
+      }
+      #tasks {
+        padding: 0;
+        list-style: none;
+        margin: 0;
+      }
+      li {
+        border-top: 1px solid var(--color-border, #ddd);
+        padding: 16px 0;
+      }
+      .row {
+        display: flex;
+        align-items: baseline;
+        gap: 16px;
+        justify-content: space-between;
+      }
+      .title {
+        font-weight: 550;
+        overflow-wrap: anywhere;
+      }
+      .status {
+        font-size: 12px;
+        white-space: nowrap;
+      }
+      .time {
+        font-size: 12px;
+      }
+      .task-detail {
+        margin-top: 10px;
+      }
+      pre {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        font:
+          12px/1.6 ui-monospace,
+          monospace;
+        max-height: 340px;
+        overflow: auto;
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .settings-extra {
+        margin-top: 12px;
+      }
+      .section-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--color-muted-foreground, #666);
+        margin: 26px 0 0;
+      }
+      .detail-button {
+        border: 0;
+        padding: 3px 0;
+        min-height: 30px;
+        background: transparent;
+        color: var(--color-muted-foreground, #666);
+        text-align: left;
+      }
+      .detail-button:hover:enabled {
+        background: transparent;
+        color: var(--color-foreground, #202025);
+      }
+      [hidden] {
+        display: none !important;
+      }
+      @media (max-width: 560px) {
+        main {
+          padding: 20px 18px 36px;
+        }
+        .fields {
+          grid-template-columns: 1fr;
+        }
+        label {
+          grid-template-columns: 1fr;
+          gap: 8px;
+        }
+        label small {
+          grid-column: 1;
+        }
+        header {
+          align-items: flex-start;
+        }
+        .setup {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .row {
+          align-items: flex-start;
+        }
+        .status {
+          max-width: 100px;
+          text-align: right;
+          white-space: normal;
+        }
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        button {
+          transition: background-color 0.12s ease;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Codex 委派</h1>
+        <button id="refresh" type="button">刷新</button>
+      </header>
+      <section id="setup" class="setup" hidden>
+        <p>连接 AGY 并允许使用委派工具。之后通过 <code>/with-codex</code> 开始任务。</p>
+        <button id="install" class="primary" type="button">连接并允许委派</button>
+      </section>
+      <section>
+        <h2>执行设置</h2>
+        <p class="muted">默认沿用 Codex 原生配置；这里的选择用于新的委派。</p>
+        <form id="settings">
+          <div class="fields">
+            <label
+              >模型<select id="model">
+                <option value="">沿用原生配置</option>
+              </select></label
+            ><label
+              >思考强度<select id="effort">
+                <option value="">沿用原生配置</option>
+              </select></label
+            >
+          </div>
+          <section class="settings-extra" aria-labelledby="permissions-label">
+            <h2 id="permissions-label" class="section-label">执行权限</h2>
+            <div class="fields">
+              <label
+                >执行范围<select id="sandbox">
+                  <option value="">沿用原生配置</option>
+                  <option value="read-only">只读</option>
+                  <option value="workspace-write">工作目录内可写</option>
+                  <option value="danger-full-access">不限制文件访问</option>
+                </select></label
+              ><label
+                >审批方式<select id="approvalPolicy">
+                  <option value="">沿用原生配置</option>
+                  <option value="untrusted">仅信任的命令自动执行</option>
+                  <option value="on-request">由 Codex 请求审批</option>
+                  <option value="never">不请求审批</option></select
+                ><small>需要你决定的审批会回到 AGY 主对话。</small></label
+              >
+            </div>
+          </section>
+          <footer>
+            <button type="submit" class="primary" id="save">保存</button><span id="saved" role="status"></span>
+          </footer>
+        </form>
+      </section>
+      <section>
+        <h2>委派任务</h2>
+        <p id="empty" class="muted" hidden>还没有委派任务。在 AGY 对话中使用 /with-codex 开始。</p>
+        <ul id="tasks" aria-label="委派任务"></ul>
+      </section>
+      <p id="error" role="alert"></p>
+    </main>
+    <script type="module" src="./src/web/main.ts"></script>
+  </body>
+</html>
